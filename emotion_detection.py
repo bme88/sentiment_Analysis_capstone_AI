@@ -1,4 +1,4 @@
-import requests
+import requests, json
 def emotion_detector(text_to_analyse):
     """
         This function helps to detect emotion from text
@@ -7,4 +7,8 @@ def emotion_detector(text_to_analyse):
     header = {"grpc-metadata-mm-model-id": "emotion_aggregated-workflow_lang_en_stock"}
     myobj = { "raw_document": { "text": text_to_analyse } }
     response = requests.post(url, json = myobj, headers=header)
-    return response.text
+    formatted_response = json.loads(response.text)
+    emotion_dict = formatted_response["emotionPredictions"][0]['emotion']
+    dominant_emotion = max(emotion_dict, key=emotion_dict.get)
+    emotion_dict.update({'dominant_emotion': dominant_emotion})
+    return emotion_dict
